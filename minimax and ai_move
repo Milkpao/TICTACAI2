@@ -1,0 +1,48 @@
+def ai_move(board, player, depth):
+    if player == AI_PLAYER:
+        best_score = -math.inf
+        best_move = None
+        for move in get_empty_positions(board):
+            board[move] = AI_PLAYER
+            score = minimax(board, HUMAN_PLAYER, depth + 1)
+            board[move] = EMPTY
+            if score > best_score:
+                best_score = score
+                best_move = move
+        board[best_move] = AI_PLAYER
+    else:
+        best_score = math.inf
+        best_move = None
+        for move in get_empty_positions(board):
+            board[move] = HUMAN_PLAYER
+            score = minimax(board, AI_PLAYER, depth + 1)
+            board[move] = EMPTY
+            if score < best_score:
+                best_score = score
+                best_move = move
+        board[best_move] = HUMAN_PLAYER
+
+def minimax(board, player, depth):
+    if is_winner(board, AI_PLAYER):
+        return 10 - depth
+    elif is_winner(board, HUMAN_PLAYER):
+        return depth - 10
+    elif is_board_full(board):
+        return 0
+    else:
+        if player == AI_PLAYER:
+            best_score = -math.inf
+            for move in get_empty_positions(board):
+                board[move] = AI_PLAYER
+                score = minimax(board, HUMAN_PLAYER, depth + 1)
+                board[move] = EMPTY
+                best_score = max(score, best_score)
+            return best_score
+        else:
+            best_score = math.inf
+            for move in get_empty_positions(board):
+                board[move] = HUMAN_PLAYER
+                score = minimax(board, AI_PLAYER, depth + 1)
+                board[move] = EMPTY
+                best_score = min(score, best_score)
+            return best_score
