@@ -1,0 +1,128 @@
+import math
+# Constants
+X = 'X'
+O = 'O'
+EMPTY = ' '
+
+# The AI player is 'O' and the human player is 'X'
+AI_PLAYER = O
+HUMAN_PLAYER = X
+
+def print_board():
+    row1 = f"|{board[0]}|{board[1]}|{board[2]}|"
+    row2 = f"|{board[3]}|{board[4]}|{board[5]}|"
+    row3 = f"|{board[6]}|{board[7]}|{board[8]}|"
+    print()
+    print(row1)
+    print(row2)
+    print(row3)
+    print() 
+board = [EMPTY] * 9
+
+def get_empty_positions(board):
+    return [i for i, x in enumerate(board) if x == EMPTY]
+
+def is_winner(board, player):
+    # check rows
+    for i in range(0, 7, 3):
+        if board[i] == board[i+1] == board[i+2] == player:
+            return True
+    # check columns
+    for i in range(3):
+        if board[i] == board[i+3] == board[i+6] == player:
+            return True
+    # check diagonals
+    if board[0] == board[4] == board[8] == player or board[2] == board[4] == board[6] == player:
+        return True
+    return False
+
+def is_board_full(board):
+  return all(x != ' ' for x in board)
+
+
+
+def player_move():
+  while True:
+    position = input("Enter a position to place 'X' (1-9): ")
+    try:
+        position = int(position) - 1
+        if position in get_empty_positions(board):
+            board[position] = 'X'
+            break
+        else:
+            print("That position is already taken. Try again.")
+    except ValueError:
+        print("Invalid input. Try again.")
+
+
+
+
+
+
+def ai_move(board, player, depth):
+    if player == AI_PLAYER:
+        best_score = -math.inf
+        best_move = None
+        for move in get_empty_positions(board):
+            board[move] = AI_PLAYER
+            score = minimax(board, HUMAN_PLAYER, depth + 1)
+            board[move] = EMPTY
+            if score > best_score:
+                best_score = score
+                best_move = move
+        board[best_move] = AI_PLAYER
+    else:
+        best_score = math.inf
+        best_move = None
+        for move in get_empty_positions(board):
+            board[move] = HUMAN_PLAYER
+            score = minimax(board, AI_PLAYER, depth + 1)
+            board[move] = EMPTY
+            if score < best_score:
+                best_score = score
+                best_move = move
+        board[best_move] = HUMAN_PLAYER
+
+def minimax(board, player, depth):
+    if is_winner(board, AI_PLAYER):
+        return 10 - depth
+    elif is_winner(board, HUMAN_PLAYER):
+        return depth - 10
+    elif is_board_full(board):
+        return 0
+    else:
+        if player == AI_PLAYER:
+            best_score = -math.inf
+            for move in get_empty_positions(board):
+                board[move] = AI_PLAYER
+                score = minimax(board, HUMAN_PLAYER, depth + 1)
+                board[move] = EMPTY
+                best_score = max(score, best_score)
+            return best_score
+        else:
+            best_score = math.inf
+            for move in get_empty_positions(board):
+                board[move] = HUMAN_PLAYER
+                score = minimax(board, AI_PLAYER, depth + 1)
+                board[move] = EMPTY
+                best_score = min(score, best_score)
+            return best_score
+while True:
+  print_board()
+  player_move()
+  ai_move(board, AI_PLAYER, 1)
+  if is_winner(board, 'X') and not is_winner(board, 'O'):
+    print("Congratulations! You won!")
+    break
+  if is_board_full(board) and not is_winner(board, 'O') and not is_winner(board, 'X'):
+   print("It's a tie!")
+   break
+  if is_winner(board, 'O') and not is_winner(board, 'X'):
+    print("Sorry, you lost. Better luck next time!")
+    break
+        
+
+
+  
+if __name__ == '__main__':
+  print_board()
