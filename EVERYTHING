@@ -110,7 +110,7 @@ def minimax(board, player, depth):
 while True:
   print_board()
   player_move()
-  ai_move(board, AI_PLAYER, 1)
+  ai_move(board, AI_PLAYER, 2)
   if is_winner(board, 'X') and not is_winner(board, 'O'):
     print("Congratulations! You won!")
     break
